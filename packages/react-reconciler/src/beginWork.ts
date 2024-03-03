@@ -1,8 +1,14 @@
 import { ReactElementType } from 'shared/ReactTypes'
 import { FiberNode } from './fiber'
 import { UpdateQueue, processUpdateQueue } from './updateQueue'
-import { HostComponent, HostRoot, HostText } from './workTags'
+import {
+	FunctionComponent,
+	HostComponent,
+	HostRoot,
+	HostText
+} from './workTags'
 import { reconcileChildFibers, mountChildFibers } from './childFibers'
+import { renderWithHooks } from './fiberHooks'
 
 // 返回 wip 的子 fiberNode
 export const beginWork = (wip: FiberNode) => {
@@ -15,6 +21,8 @@ export const beginWork = (wip: FiberNode) => {
 		case HostText:
 			// 没有 beginWork 流程，因为它没有子节点
 			return null
+		case FunctionComponent:
+			return updateFunctionComponent(wip)
 		default:
 			if (__DEV__) {
 				console.warn('beginWork 未实现的类型')
@@ -55,6 +63,12 @@ function updateHostRoot(wip: FiberNode) {
 function updateHostComponent(wip: FiberNode) {
 	const nextProps = wip.pendingProps
 	const nextChildren = nextProps.children
+	reconcileChildren(wip, nextChildren)
+	return wip.child
+}
+
+function updateFunctionComponent(wip: FiberNode) {
+	const nextChildren = renderWithHooks(wip)
 	reconcileChildren(wip, nextChildren)
 	return wip.child
 }
