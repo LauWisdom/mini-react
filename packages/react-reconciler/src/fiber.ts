@@ -36,6 +36,10 @@ export class FiberNode {
 		// 作为工作单元
 		this.pendingProps = pendingProps
 		this.memoizedProps = null
+		/*
+		 * HostRoot: 保存 root 节点下的 ReactElement
+		 * FunctionComponent: 保存 hook 链表
+		 */
 		this.memoizedState = null
 		this.updateQueue = null
 
