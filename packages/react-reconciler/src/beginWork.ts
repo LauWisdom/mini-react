@@ -40,14 +40,16 @@ export const beginWork = (wip: FiberNode) => {
 function updateHostRoot(wip: FiberNode) {
 	const baseState = wip.memoizedState
 
-	// TODO: 类型不是 ReactElement 吗
-	const updateQueue = wip.updateQueue as UpdateQueue<Element>
+	const updateQueue = wip.updateQueue as UpdateQueue<ReactElementType>
 	const pending = updateQueue.shared.pending
 	updateQueue.shared.pending = null
 
 	// hostRootFiber 的 updateQueue 中存的 update 实际上是 <App /> 的 ReactElement
 	// 所以计算出来的 memoizedState 实际上是一个 ReactElement
-	const { memoizedState } = processUpdateQueue(baseState, pending)
+	const { memoizedState } = processUpdateQueue<ReactElementType>(
+		baseState,
+		pending
+	)
 	wip.memoizedState = memoizedState
 	const nextChildren = wip.memoizedState
 	reconcileChildren(wip, nextChildren)
